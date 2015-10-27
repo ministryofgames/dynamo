@@ -1,0 +1,5 @@
+%{"hackney": {:hex, :hackney, "1.3.2"},
+  "iam_role": {:hex, :iam_role, "1.0.0"},
+  "idna": {:hex, :idna, "1.0.2"},
+  "jsone": {:hex, :jsone, "1.2.0"},
+  "ssl_verify_hostname": {:hex, :ssl_verify_hostname, "1.0.5"}}
