@@ -6,6 +6,7 @@ defmodule Dynamo.Decoder do
 
   defp decode_item(%{"NULL" => true}),  do: nil
   defp decode_item(%{"BOOL" => value}), do: value == "true"
+  defp decode_item(%{"B" => value}),    do: Base.decode64!(value)
   defp decode_item(%{"S" => value}),    do: value
   defp decode_item(%{"N" => value}),    do: decode_number(value)
   defp decode_item(%{"M" => value}),    do: decode_map(value)

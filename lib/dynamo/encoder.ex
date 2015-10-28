@@ -4,6 +4,7 @@ defmodule Dynamo.Encoder do
     encode_item(item)
   end
 
+  defp encode_item(%{"B" => blob}),             do: %{"B" => Base.encode64(blob)}
   defp encode_item(nil),                        do: %{"NULL" => true}
   defp encode_item(:null),                      do: %{"NULL" => true}
   defp encode_item(item) when is_boolean(item), do: %{"BOOL" => item |> to_string}

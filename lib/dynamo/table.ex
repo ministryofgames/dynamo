@@ -91,17 +91,15 @@ defmodule Dynamo.Table do
     do_operation("CreateTable", data)
   end
   
-  def put_item(table, item, condition \\ nil) do
+  def put_item(table, item, opts \\ %{}) do
     item = Enum.map(item, fn {k, v} -> {k, Dynamo.Encoder.encode(v)} end)
     data = %{
       "Item" => item,
       "TableName" => table
     }
     
-    # add condition expression
-    if condition do
-      data = Dict.put(data, "ConditionExpression", condition)
-    end
+    # add optional attribtues
+    data = Dict.merge(opts, data)
     
     case do_operation("PutItem", data) do
       {:ok, %{}} ->
@@ -120,10 +118,10 @@ defmodule Dynamo.Table do
     }
 
     case do_operation("GetItem", data) do
-      {:ok, result} when length(result) == 0 ->
+      {:ok, result} when map_size(result) == 0 ->
         {:error, :item_not_found}
       {:ok, result} ->
-        item = Enum.map(result["Item"], fn {k, v} -> {k, Dynamo.Decoder.decode(v)} end)
+        item = Enum.into(result["Item"], %{}, fn {k, v} -> {k, Dynamo.Decoder.decode(v)} end)
         {:ok, Dict.put(result, "Item", item)}
       {:error, error} ->
         {:error, error}
