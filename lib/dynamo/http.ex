@@ -12,7 +12,8 @@ defmodule Dynamo.Http do
     defstruct status_code: nil, headers: [], payload: ""
   end
 
-  def post(opname, payload \\ "") do
+  def post(opname, data) do
+    payload = :jsone.encode(data)
     region = Application.get_env(:dynamo, :region, "us-east-1")
     uri = get_uri(region) |> URI.parse
     
@@ -30,7 +31,7 @@ defmodule Dynamo.Http do
     
     case List.keyfind(response_headers, "Content-Type", 0) do
       {"Content-Type", "application/x-amz-json-1.0"} ->
-        response_payload = :jsone.decode(response_payload)
+        response_payload = :jsone.decode(response_payload, object_format: :tuple)
       nil ->
         :ok
     end

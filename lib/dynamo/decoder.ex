@@ -1,16 +1,12 @@
-defmodule Dynamo.Decoder do
+defmodule Dynamo.AttributeType.Decoder do
 
-  def decode(item) do
-    decode_item(item)
-  end
-
-  defp decode_item(%{"NULL" => true}),  do: nil
-  defp decode_item(%{"BOOL" => value}), do: value == "true"
-  defp decode_item(%{"B" => value}),    do: Base.decode64!(value)
-  defp decode_item(%{"S" => value}),    do: value
-  defp decode_item(%{"N" => value}),    do: decode_number(value)
-  defp decode_item(%{"M" => value}),    do: decode_map(value)
-  defp decode_item(%{"L" => value}),    do: decode_list(value)
+  def decode({[{"NULL", true}]}),  do: nil
+  def decode({[{"BOOL", value}]}), do: value == "true"
+  def decode({[{"B", value}]}),    do: Base.decode64!(value)
+  def decode({[{"S", value}]}),    do: value
+  def decode({[{"N", value}]}),    do: decode_number(value)
+  def decode({[{"M", value}]}),    do: decode_map(value)
+  def decode({[{"L", value}]}),    do: decode_list(value)
 
   defp decode_number(string) do
     try do
@@ -21,14 +17,14 @@ defmodule Dynamo.Decoder do
     end
   end
                                    
-  defp decode_map(map) do
+  defp decode_map({map}) do
     Enum.reduce(map, %{}, fn ({k, v}, acc) ->
-      Dict.put(acc, k, decode_item(v))
+      Dict.put(acc, k, decode(v))
     end)
   end
-
+  
   defp decode_list(list) do
-    Enum.map(list, &decode_item(&1))
+    Enum.map(list, &decode(&1))
   end
   
 end
