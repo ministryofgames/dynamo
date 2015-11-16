@@ -3,7 +3,7 @@ defmodule Dynamo.Mixfile do
 
   def project do
     [app: :dynamo,
-     version: "0.0.1",
+     version: "0.0.2",
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -28,7 +28,7 @@ defmodule Dynamo.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:iam_role, "~> 1.0"},
+      {:iam_role, git: "git://github.com/ministryofgames/iam_role.git", tag: "HEAD"},
       {:jsone, "~> 1.2"},
       {:hackney, "~> 1.3"}
     ]
