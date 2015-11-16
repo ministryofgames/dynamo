@@ -28,7 +28,7 @@ defmodule Dynamo.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:iam_role, git: "git://github.com/ministryofgames/iam_role.git", tag: "HEAD"},
+      {:iam_role, git: "git://github.com/ministryofgames/iam_role.git", branch: "master"},
       {:jsone, "~> 1.2"},
       {:hackney, "~> 1.3"}
     ]
