@@ -80,6 +80,8 @@ defmodule Dynamo do
     case do_operation("GetItem", data) do
       {:ok, result} when map_size(result) == 0 ->
         {:error, :item_not_found}
+      {:ok, {[]}} ->
+        {:error, :item_not_found}
       {:ok, result} ->
         # build the response map
         {:ok, build_result(result)}
