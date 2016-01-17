@@ -1,4 +1,5 @@
 defmodule Dynamo do
+	require Logger
 
   alias Dynamo.AttributeType.Encoder
   alias Dynamo.AttributeType.Decoder
@@ -91,17 +92,29 @@ defmodule Dynamo do
   end
   
   ## Internal API
-  
+
   defp do_operation(opname, data) do
     response = Http.post(opname, data)
-    
+
     case response.status_code do
-      200 ->
-        {:ok, response.payload}
-      _ ->
-        [_, type] = String.split(response.payload["__type"], "#", parts: 2)
-        msg  = response.payload["message"]
-        {:error, {type, msg}}
+      200 -> {:ok, response.payload}
+      _ -> {:error, map_error(response.payload)}
+    end
+  end
+
+  defp map_error(payload) do
+    # \todo [petri] http body is parsed as a tuple (and thus wrapped in a 1-element tuple)
+    payload = build_result(payload)
+    [_, err_type] = String.split(payload["__type"], "#", parts: 2)
+    err_msg = payload["message"]
+
+    case err_type do
+      "ConditionalCheckFailedException" -> :conditional_check_failed
+      "InternalServerError" -> :internal_server_error
+      "ItemCollectionSizeLimitExceededException" -> :item_collection_size_limit_exceeded
+      "ProvisionedThroughputExceededException" -> :provisioned_throughput_exceeded
+      "ResourceNotFoundException" -> :resource_not_found
+      other -> {other, err_msg}
     end
   end
 
