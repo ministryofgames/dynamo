@@ -77,7 +77,7 @@ defmodule Dynamo do
 
     # add optional attributes
     data = Dict.merge(opts, data)
-    
+
     case do_operation("GetItem", data) do
       {:ok, result} when map_size(result) == 0 ->
         {:error, :item_not_found}
@@ -88,6 +88,29 @@ defmodule Dynamo do
         {:ok, build_result(result)}
       {:error, error} ->
         {:error, error}
+    end
+  end
+
+  @doc ~S"""
+  Deletes an item from DynamoDB table.
+
+  ## Examples
+
+      iex> key = %{"__id__" => "test"}
+      iex> Dynamo.delete_item("test_table", key)
+  """
+  def delete_item(table, key, opts \\ %{}) do
+    key = Enum.map(key, fn {k, v} -> {k, Encoder.encode(v)} end)
+    data = %{
+      "Key" => key,
+      "TableName" => table
+    }
+
+    data = Dict.merge(opts, data)
+
+    case do_operation("DeleteItem", data) do
+      {:ok, _result} -> :ok
+      {:error, reason} -> {:error, reason}
     end
   end
   
