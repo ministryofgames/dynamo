@@ -41,6 +41,5 @@ defmodule Dynamo.Http do
   end
   
   defp get_uri("local"), do: "http://localhost:8000/"
-  defp get_uri(region), do: "https://dynamodb.#{region}.amazonaws.com/"
-  
+  defp get_uri(region), do: "http://dynamodb.#{region}.amazonaws.com/"
 end
