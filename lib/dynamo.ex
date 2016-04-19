@@ -123,9 +123,8 @@ defmodule Dynamo do
 
 		case do_operation("Scan", data) do
 			{:ok, result} ->
-				{[{"Count", count}, {"Items", items}, {"ScannedCount", _scanned_count}]} = result
-				items = parse_item_list(items)
-				{:ok, items}
+				result = parse_scan_result(result)
+				{:ok, result}
 
 			{:error, reason} ->
 				{:error, reason}
@@ -184,7 +183,18 @@ defmodule Dynamo do
 		|> Enum.into(%{})
 	end
 
-	def parse_item_list(items) do
-		items |> Enum.map(&parse_item/1)
+	def parse_scan_result({result}) do
+		result
+		|> Enum.map(fn {key, value} ->
+			case key do
+				"Items" ->
+					items = value |> Enum.map(&parse_item/1)
+					{key, items}
+
+				_ ->
+					{key, value}
+			end
+		end)
+		|> Enum.into(%{})
 	end
 end
